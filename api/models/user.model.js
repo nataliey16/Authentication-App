@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcryptjs from "bcryptjs";
 
 //schema: set of rules and conditions
 const userSchema = new mongoose.Schema(

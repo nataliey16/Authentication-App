@@ -18,7 +18,7 @@ const SignUp = () => {
       //prevent refreshing the page when submitting the form
       e.preventDefault();
       //create a req to the database
-      //For fetch, the try catch actuallt doesnt work when setting up error, need only the if statement
+      //For fetch, the try catch actually doesnt work when setting up error, need only the if statement
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {

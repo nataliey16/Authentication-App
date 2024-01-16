@@ -28,6 +28,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
 
 //Adding a middleware: Middleware is software that different applications use to communicate with each other.
+//This handles the errors
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500; //500 is the interal server error
   const message = err.message || "Internal Server Error";

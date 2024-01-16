@@ -1,11 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     //... is a strip operator to keep the prev value of sign up data, then [e.target.id] takes new value
@@ -14,8 +20,7 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     try {
-      setLoading(true);
-      setError(false);
+      dispatch(signInStart());
       //prevent refreshing the page when submitting the form
       e.preventDefault();
       //create a req to the database
@@ -29,15 +34,15 @@ const SignUp = () => {
       });
       //get data: convert response to json to see response from backend
       const data = await res.json();
-      setLoading(false);
       if (data.success === false) {
-        setError(true);
+        //setError(true);
+        dispatch(signInFailure(data));
         return;
       }
+      dispatch(signInSuccess(data));
       navigate("/"); // If no errors, navigate valid user to home page
     } catch (error) {
-      setLoading(false);
-      setError(true);
+      dispatch(signInFailure(error));
     }
   };
 
@@ -73,7 +78,9 @@ const SignUp = () => {
           <span className="text-blue-500 p-1">Sign up</span>
         </Link>
       </div>
-      <p className="text-red-600 mt-3">{error && "Something went wrong!"}</p>
+      <p className="text-red-600 mt-3">
+        {error ? error.message || "Something went wrong!" : " "}
+      </p>
     </div>
   );
 };

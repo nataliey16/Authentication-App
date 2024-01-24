@@ -6,6 +6,7 @@ import {
   signInFailure,
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
+import OAuth from "../components/OAuth";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
@@ -73,6 +74,7 @@ const SignUp = () => {
           {/* If loading, display loading, else display Sign Up */}
           {loading ? "Loading..." : "Sign In"}
         </button>
+        <OAuth />
       </form>
       <div className="flex mt-3">
         <p>Dont have an account?</p>

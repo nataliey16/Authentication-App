@@ -34,11 +34,13 @@ const SignUp = () => {
       });
       //get data: convert response to json to see response from backend
       const data = await res.json();
+
       if (data.success === false) {
         //setError(true);
         dispatch(signInFailure(data));
         return;
       }
+
       dispatch(signInSuccess(data));
       navigate("/"); // If no errors, navigate valid user to home page
     } catch (error) {

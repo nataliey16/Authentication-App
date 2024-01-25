@@ -44,3 +44,53 @@ export const signin = async (req, res, next) => {
     next(error); // handle errors
   }
 };
+
+export const google = async (req, res, next) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+      const { password: hashedPassword, ...rest } = user._doc; // remove password from client side for security. Remove password from the email and username
+      const expiryDateCookie = new Date(Date.now() + 3600000); //1 hour
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          expires: expiryDateCookie,
+        })
+        .status(200)
+        .json(rest); //Only show user's id, email, and username, while hiding password; //httpOnly prevents third party sites from changing the cookie, cookie expires in 1 hour
+    } else {
+      //if user does not exist
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) +
+        Math.random().toString(36).slice(-8); //create a random password of numbers and letters with 8 digits.  36 is any # from 0-9 and any alphabet from a-z (in total 36 values)
+      //Each random # is converted to # or letter.
+      //0.923456 converts to
+      //0.gjwb098767 then count 8 from end and keep the first 8 and remove .0
+      //gjwb0987
+      //added another Math.random to have a 16 digit password that is more secure
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      const newUser = new User({
+        username:
+          req.body.name.split(" ").join("").toLowerCase() +
+          Math.random().toString(36).slice(-8),
+        email: req.body.email,
+        password: hashedPassword,
+        profileImage: req.body.photo,
+      });
+      await newUser.save();
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+      const { password: hashedPassword2, ...rest } = newUser._doc;
+      const expiryDateCookie = new Date(Date.now() + 3600000); //1 hour
+      res
+        .cookie("access_token", token, {
+          httpOnly: true,
+          expires: expiryDateCookie,
+        })
+        .status(200)
+        .json(rest); //Only show user's id, email, and username, while hiding password; //httpOnly prevents third party sites from changing the cookie, cookie expires in 1 hour
+    }
+  } catch (error) {
+    next(error);
+  }
+};

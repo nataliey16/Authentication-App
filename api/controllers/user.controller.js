@@ -32,8 +32,8 @@ export const updateUser = async (req, res, next) => {
       },
       { new: true }
     ); //need this to view updated user or it will show previous user
-    const { password, ...rest } = updateUser._doc;
-    req.status(200).json(rest);
+    const { password, ...rest } = updatedUser._doc;
+    res.status(200).json(rest);
   } catch (error) {
     next(error);
   }
